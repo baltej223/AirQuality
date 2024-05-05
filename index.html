@@ -144,19 +144,22 @@
                 }
             },
         };
-        dweetio.listen_for("B0x1324d47hc33", function (dweet) { 
-            //called every time when there is a new dweet form mything
+        setInterval(function(){
+            dweetio.get_latest_dweet_for("B0x1324d47hc33", function (err, dweet) {
             var dweet = dweet[0]; // Dweet is always an array of 1
-            console.log(dweet.content); // The content of the dweet
+            // The content of the dweet
             plc.innerHTML = dweet.content.AirIndex;
             ObsTime.innerHTML = dweet.created;
-            console.log(dweet.created);
+            Quality.innerHTML = check.air(dweet.content.AirIndex);
+            // The create date of the dweet            
         });
-setInterval(function(){
-    const now = new Date();
-const currentTime = now.toLocaleTimeString();
-time.innerHTML=currentTime;
-},1000);
+        },4000);
+
+            setInterval(function () {
+                const now = new Date();
+                const currentTime = now.toLocaleTimeString();
+                time.innerHTML = currentTime;
+            }, 1000);
     </script>
 </body>
 
