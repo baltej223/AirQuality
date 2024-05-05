@@ -1,0 +1,163 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Freeman&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color:#e9f3fd;
+            background-size: 10px 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #platform {
+            /*display: flex;*/
+            width: 45%;
+            height: 60%;
+            margin-top: 5%;
+            background: rgba(124, 151, 247, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(1px);
+            -webkit-backdrop-filter: blur(1px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        #Index {
+            display: felx;
+            flex-direction: column;
+        }
+
+        #AirIndex {
+            padding:5%;
+            font-size: 100px;
+            font-family: Freeman;
+        }
+        #quality{
+            padding: 1%;
+            font-family: kanit;
+            font-size: 20px;
+        }
+        #AirIndex-recording_time{
+            padding: 5%;
+        }
+        logs{
+            display: hidden;
+        }
+        #live::before{
+            content: "🔴";
+        }
+        #live{
+            padding-top: 1%;
+            padding-right: 5%;
+            float: right;
+            font-family: kanit;
+        }
+        #AirIndex-recording_time{
+            font-family: kanit;
+        }
+        #time{
+            padding-left: 2%;
+            padding-top: 1%;
+            float: left;
+        }
+
+    </style>
+    <script src="https://dweet.io/client/dweet.io.min.js"></script>
+</head>
+
+<body>
+    <center>
+        <div id="platform">
+            <div id="Index">
+                <div id="live">Updating live</div>
+                <div id="time"></div>
+                <div id="AirIndex"></div>
+                <div id="AirIndex-recording_time"></div>
+                <div id="Quality"></div>
+            </div>
+            <div>
+            </div>
+        </div>
+    </center>
+    <script>
+        let sw = screen.width;
+        let sh = screen.height;
+        let plc = document.getElementById("AirIndex");
+        let ObsTime = document.getElementById("AirIndex-recording_time");
+        let platform = document.querySelector("#platform");
+        let time = document.getElementById("time");
+        document.getElementById("Quality");
+        if (sw <= 500) {
+            //phone
+            platform.style.width = "60%";
+            platform.style.height = "30%";
+            platform.style.marginTop = "50%";
+        }
+        else {
+            platform.style.width = "45%";
+            platform.style.height = "60%";
+            platform.style.marginTop = "5%";
+        }
+        /*function httpGet(theUrl) {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("GET", theUrl, false); // false for synchronous request
+            xmlHttp.send(null);
+            return xmlHttp.responseText;
+        }*/
+        dweetio.get_latest_dweet_for("B0x1324d47hc33", function (err, dweet) {
+            var dweet = dweet[0]; // Dweet is always an array of 1
+            console.log(dweet.content); // The content of the dweet
+            plc.innerHTML = dweet.content.AirIndex;
+            ObsTime.innerHTML = dweet.created;
+            Quality.innerHTML = check.air(dweet.content.AirIndex);
+            console.log(dweet.created); // The create date of the dweet            
+        });
+        //ColorAccToAirQlty
+        let check = {
+            "air": function (ppm) {
+                if (ppm <= 50) {
+                    return "Great";
+                }
+                if (ppm > 50 && ppm <= 100) {
+                    return "good";
+                }
+                if (ppm > 100 && ppm <= 150) {
+                    return "Modrate";
+                }
+                if (ppm > 150 && ppm <= 200) {
+                    return "poor";
+                }
+                if (ppm > 200 && ppm <= 250) {
+                    return "Very poor";
+                }
+                if (ppm > 250 && ppm <= 300) {
+                    return "Extreamly poor";
+                }
+                if (ppm > 300) {
+                    return "Dangerous";
+                }
+            },
+        };
+        dweetio.listen_for("B0x1324d47hc33", function (dweet) { 
+            //called every time when there is a new dweet form mything
+            var dweet = dweet[0]; // Dweet is always an array of 1
+            console.log(dweet.content); // The content of the dweet
+            plc.innerHTML = dweet.content.AirIndex;
+            ObsTime.innerHTML = dweet.created;
+            console.log(dweet.created);
+        });
+setInterval(function(){
+    const now = new Date();
+const currentTime = now.toLocaleTimeString();
+time.innerHTML=currentTime;
+},1000);
+    </script>
+</body>
+
+</html>
